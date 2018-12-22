@@ -52,7 +52,7 @@ app.post('/api/exercise/add/',function(req,res){
 })
   
 app.get('/api/exercise/log/',function(req,res){
-  EXERCISE.find({userId: req.query.userId})
+  EXERCISE.find({userId: req.query.userId}, {date: {$gte: new Date(req.query.from), $lt: new Date(req.query.to)}}).limit(req.query.limit)
 })
 
 // Not found middleware
