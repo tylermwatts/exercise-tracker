@@ -46,7 +46,7 @@ app.route('/api/exercise/new-user/')
 app.post('/api/exercise/add/',function(req,res){
   USER.find({userId: req.body.userId}, function(err, user){
     if(err){return res.json({"error": err})}
-    user.exercises.push(new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)}))
+    user['exercises'].push(new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)}))
     res.send("Exercise added for " + user.userId);
   })
 })
