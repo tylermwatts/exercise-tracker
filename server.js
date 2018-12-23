@@ -26,7 +26,7 @@ const exerciseSchema = mongoose.Schema({
 
 const userSchema = mongoose.Schema({
   userId: {type: String, required: true},
-  exercises: {type: []}
+  exercises: {type: [exerciseSchema]}
 })
 
 const USER = mongoose.model('USER', userSchema);
@@ -34,6 +34,9 @@ const EXERCISE = mongoose.model('EXERCISE', exerciseSchema);
 
 app.route('/api/exercise/new-user/')
   .post(function(req, res){
+  if (USER.find({userId: req.body.user}) !){
+    
+  }
   let u = new USER;
   u.userId = req.body.username;
   console.log(u)
@@ -46,8 +49,9 @@ app.route('/api/exercise/new-user/')
 app.post('/api/exercise/add/',function(req,res){
   USER.find({userId: req.body.userId}, function(err, user){
     if(err){return res.json({"error": err})}
-    user['exercises'].push(new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)}))
-    res.send("Exercise added for " + user.userId);
+    console.log(user[0])
+    //user.exercises.push(new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)}))
+    res.send("Exercise added for " + user.userId)
   })
 })
   
