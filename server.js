@@ -34,9 +34,11 @@ const EXERCISE = mongoose.model('EXERCISE', exerciseSchema);
 
 app.route('/api/exercise/new-user/')
   .post(function(req, res){
-  if (USER.find({userId: req.body.user}) !){
-    
-  }
+    USER.count({userId: req.body.user},(err, count)=>{
+      if(count > 0){
+        return res.send({error: "User already exists!"})
+      }
+    })
   let u = new USER;
   u.userId = req.body.username;
   console.log(u)
