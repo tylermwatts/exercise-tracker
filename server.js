@@ -38,20 +38,20 @@ app.route('/api/exercise/new-user/')
       if(count > 0){
         return res.send({error: "User already exists!"})
       }
+      let u = new USER;
+      u.userId = req.body.username;
+      console.log(u)
+      u.save(function (err,user){
+        if (err){return res.json({"error": err})}
+        return res.json(user)
+      })
     })
-  let u = new USER;
-  u.userId = req.body.username;
-  console.log(u)
-  u.save(function (err,user){
-    if (err){return res.json({"error": err})}
-    return res.json(user)
   })
-})
 
 app.post('/api/exercise/add/',function(req,res){
   USER.find({userId: req.body.userId}, function(err, user){
     if(err){return res.json({"error": err})}
-    console.log(user[0])
+    console.log(user)
     //user.exercises.push(new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)}))
     res.send("Exercise added for " + user.userId)
   })
