@@ -35,7 +35,7 @@ const USER = mongoose.model('USER', userSchema);
 app.route('/api/exercise/new-user/')
   .post(function(req, res){
     USER.find
-    let u = new USER;
+    var u = new USER;
     u.userId = req.body.username;
     console.log(u)
     u.save(function (err,user){
@@ -45,26 +45,20 @@ app.route('/api/exercise/new-user/')
   })
 
 app.post('/api/exercise/add/',function(req,res){
-  USER.find({userId: req.body.userId}, function(err, user){
+  USER.findOne({userId: req.body.userId}, function(err, user){
     if(err){return res.json({"error": err})}
-    user.exercises.push(new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)}))
+    var exerciseToAdd = new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)})
+    user.exercises.push(exerciseToAdd)
   })
   res.send("exercise added for " + req.body.userId)
 })
   
 app.get('/api/exercise/log/',function(req,res){
-  EXERCISE.find({userId: req.query.userId}, function(err,exercise){
+  USER.findOne({userId: req.query.userId}, function(err,user){
       if (err){return {"error": err}}
-      if (req.query.from !== null){
-        exercise
-          .find({date: {$gte: new Date(req.query.from), $lt: new Date(req.query.to)}},
-            function(err,dataInDates){
-              if(err){return {error: err}}
-              res.send(dataInDates)
-        })} else {
-    res.json(exercise)
-        }
-    }).limit(req.query.limit)
+      console.log(user);
+      res.send(user.exercises)
+    })
   })
 
 // Not found middleware
