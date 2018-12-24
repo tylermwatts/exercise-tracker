@@ -57,10 +57,9 @@ app.post('/api/exercise/add/',function(req,res){
     user.exercises.push(exerciseToAdd)
     user.save(function (err,user){
       if (err){return {"error": err}}
-      res.json(user.exercises);
+      res.send(req.body.description + " added for " + req.body.userId)
     })
   })
-  res.send(req.body.description + " added for " + req.body.userId)
 })
   
 app.get('/api/exercise/log/',function(req,res){
@@ -71,8 +70,10 @@ app.get('/api/exercise/log/',function(req,res){
     .limit(req.query.limit)
     .exec(function(err,data){
       if(err) return {error:err}
-      var userObj = {userId: req.query.userId}
+      var userObj = {userId: req.query.userId};
+      userObj.number_of_exercises = data.length;
       userObj.exercises = data.map(d=>({exercise: d.description, date: d.date, duration: d.duration}))
+      res.json(userObj);
   })
 })
 
