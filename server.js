@@ -26,30 +26,26 @@ const exerciseSchema = mongoose.Schema({
 
 const userSchema = mongoose.Schema({
   userId: {type: String, required: true},
-  exercises: [{type: EXERCISE}]
+  exercises: [{type: exerciseSchema}]
 })
 
-const USER = mongoose.model('USER', userSchema);
 const EXERCISE = mongoose.model('EXERCISE', exerciseSchema);
+const USER = mongoose.model('USER', userSchema);
 
 app.route('/api/exercise/new-user/')
   .post(function(req, res){
-    USER.count({userId: req.body.user},(err, count)=>{
-      if(count > 0){
-        return res.send({error: "User already exists!"})
-      }
-      let u = new USER;
-      u.userId = req.body.username;
-      console.log(u)
-      u.save(function (err,user){
-        if (err){return res.json({"error": err})}
-        return res.json(user)
-      })
+    USER.find
+    let u = new USER;
+    u.userId = req.body.username;
+    console.log(u)
+    u.save(function (err,user){
+      if (err){return res.json({"error": err})}
+      return res.json(user)
     })
   })
 
 app.post('/api/exercise/add/',function(req,res){
-  USER.find({userId: req.body.userId}, function(err, user){
+  USER.find({uid: req.body.userId}, function(err, user){
     if(err){return res.json({"error": err})}
     console.log(user)
     //user.exercises.push(new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)}))
