@@ -40,30 +40,30 @@ app.route('/api/exercise/new-user/')
     console.log(u)
     u.save(function (err,user){
       if (err){return res.json({"error": err})}
-      return res.json(user)
+      res.json(user)
     })
   })
 
 app.post('/api/exercise/add/',function(req,res){
-  USER.find({uid: req.body.userId}, function(err, user){
+  USER.find({userId: req.body.userId}, function(err, user){
     if(err){return res.json({"error": err})}
-    console.log(user)
-    //user.exercises.push(new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)}))
-    res.send("Exercise added for " + user.userId)
+    user.exercises.push(new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)}))
   })
+  res.send("exercise added for " + req.body.userId)
 })
   
 app.get('/api/exercise/log/',function(req,res){
-  EXERCISE.find({userId: req.query.userId}, function(err,data){
+  EXERCISE.find({userId: req.query.userId}, function(err,exercise){
       if (err){return {"error": err}}
-      if (req.query.from){
-        data
+      if (req.query.from !== null){
+        exercise
           .find({date: {$gte: new Date(req.query.from), $lt: new Date(req.query.to)}},
             function(err,dataInDates){
               if(err){return {error: err}}
               res.send(dataInDates)
-        })}
-    res.send(data)
+        })} else {
+    res.json(exercise)
+        }
     }).limit(req.query.limit)
   })
 
