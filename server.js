@@ -21,12 +21,12 @@ const exerciseSchema = mongoose.Schema({
   userId: {type: String},
   description: {type: String, required: true},
   duration: {type: Number, required: true},
-  date: {type: Date, required: false}
+  date: {type: Date, default: Date.now }
 })
 
 const userSchema = mongoose.Schema({
   userId: {type: String, required: true},
-  exercises: {type: [exerciseSchema]}
+  exercises: [{type: EXERCISE}]
 })
 
 const USER = mongoose.model('USER', userSchema);
