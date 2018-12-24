@@ -33,6 +33,12 @@ const EXERCISE = mongoose.model('EXERCISE', exerciseSchema);
 const USER = mongoose.model('USER', userSchema);
 
 app.route('/api/exercise/new-user/')
+  .get(function (req, res){
+    USER.find(function(err,users){
+      if (err){return {"error": err}}
+      res.send(users)
+    })
+  })
   .post(function(req, res){
     USER.find
     var u = new USER;
@@ -49,14 +55,19 @@ app.post('/api/exercise/add/',function(req,res){
     if(err){return res.json({"error": err})}
     var exerciseToAdd = new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)})
     user.exercises.push(exerciseToAdd)
+    user.save(function (err,user){
+      if (err){return {"error": err}}
+      res.json(user.exercises);
+    })
   })
-  res.send("exercise added for " + req.body.userId)
+  res.send(req.body.description + " added for " + req.body.userId)
 })
   
 app.get('/api/exercise/log/',function(req,res){
   USER.findOne({userId: req.query.userId}, function(err,user){
       if (err){return {"error": err}}
       console.log(user);
+      
       res.send(user.exercises)
     })
   })
