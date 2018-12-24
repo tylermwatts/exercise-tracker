@@ -72,7 +72,7 @@ app.get('/api/exercise/log/',function(req,res){
     .exec(function(err,data){
       if(err) return {error:err}
       var userObj = {userId: req.query.userId}
-      userObj.exercises = 
+      userObj.exercises = data.map(d=>({exercise: d.description, date: d.date, duration: d.duration}))
   })
 })
 
