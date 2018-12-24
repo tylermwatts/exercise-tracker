@@ -66,15 +66,15 @@ app.post('/api/exercise/add/',function(req,res){
 app.get('/api/exercise/log/',function(req,res){
   var logQuery = {userId: req.query.userId}
   if (req.query.from && req.query.to){logQuery.date = {$gt: req.query.from, $lt: req.query.to}}
-  USER.findOne({userId: req.query.userId}, function(err,user){
-      if (err){return {"error": err}}
-      console.log(user);
-      user.exercises.find(logQuery, function(err,exercises){
-        if(err){return {"error":err
-      })
-      res.send(user.exercises)
-    })
+  EXERCISE
+    .find(logQuery)
+    .limit(req.query.limit)
+    .exec(function(err,data){
+      if(err) return {error:err}
+      var userObj = {userId: req.query.userId}
+      userObj.exercises = 
   })
+})
 
 // Not found middleware
 app.use((req, res, next) => {
