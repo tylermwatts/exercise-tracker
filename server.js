@@ -64,10 +64,10 @@ app.post('/api/exercise/add/',function(req,res){
   
 app.get('/api/exercise/log/',function(req,res){
   var logQuery = {userId: req.query.userId}
-  if (req.query.from && req.query.to){logQuery.date = {$gt: req.query.from, $lt: req.query.to}}
-  EXERCISE
+  if (req.query.from && req.query.to){logQuery.date = {$gte: req.query.from, $lt: req.query.to}}
+  USER.findOne({userId: req.query.userId})
     .find(logQuery)
-    .limit(req.query.limit)
+    // .limit(req.query.limit)
     .exec(function(err,data){
       if(err) return {error:err}
       var userObj = {userId: req.query.userId};
