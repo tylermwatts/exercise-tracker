@@ -32,26 +32,29 @@ const EXERCISE = mongoose.model('EXERCISE', exerciseSchema);
 const USER = mongoose.model('USER', userSchema);
 
 app.route('/api/exercise/new-user/')
-  .get(function (req, res){
-    USER.find(function(err,users){
-      if (err){return {"error": err}}
-      res.send(users)
-    })
-  })
-  .post(function(req, res){
-    USER.find
-    var u = new USER;
-    u.userId = req.body.username;
-    console.log(u)
-    u.save(function (err,user){
-      if (err){return res.json({"error": err})}
-      res.json(user)
+  .post(function(req, res, next){
+    USER.find({userId: req.body}, function(err,user){
+      if (err) return next({error: err})
+      if (!user) {
+        var u = new USER;
+        u.userId = req.body.username;
+        console.log(u)
+        u.save(function (err,user){
+          if (err){return res.json({"error": err})}
+          res.json(user)
+        })
+      } else {
+        next({error: "user already exists!"})
+      }
     })
   })
 
-app.post('/api/exercise/add/',function(req,res){
+
+
+app.post('/api/exercise/add/',function(req,res,next){
   USER.findOne({userId: req.body.userId}, function(err, user){
-    if(err){return res.json({"error": err})}
+    if (err) return {error: err}
+    if (!user) return next({error: "No such user exists!"})               
     var exerciseToAdd = new EXERCISE({userId: user.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)})
     exerciseToAdd.save(function (err,data){
       if (err) return {error: err}
