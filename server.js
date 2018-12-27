@@ -26,7 +26,7 @@ const exerciseSchema = mongoose.Schema({
 
 const userSchema = mongoose.Schema({
   userId: {type: String, required: true},
-  exercises: [{type: exerciseSchema}]
+  exercises: []
 })
 
 const EXERCISE = mongoose.model('EXERCISE', exerciseSchema);
@@ -65,7 +65,7 @@ app.post('/api/exercise/add/',function(req,res){
 app.get('/api/exercise/log/',function(req,res){
   var logQuery = {userId: req.query.userId}
   if (req.query.from && req.query.to){logQuery.date = {$gte: req.query.from, $lt: req.query.to}}
-  EXERCISE.find(logQuery,function(err,exercises){
+  EXERCISE.find(logQuery).exec(function(err,exercises){
     if (err) return {error: err}
     var userObj = {userId: req.query.userId}
     if (req.query.limit){
