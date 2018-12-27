@@ -42,8 +42,8 @@ app.route('/api/exercise/new-user/')
     })
   })
 
-app.get('api/exercise/users', function(req,res){
-  USER.find({}).then(function(err,users){
+app.get('api/exercise/users/', function(req,res){
+  USER.find({}).toArray(function(err,users){
     if (err) return {error: err}
     res.send(users)
   })
