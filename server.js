@@ -43,7 +43,7 @@ app.route('/api/exercise/new-user/')
   })
 
 app.get('api/exercise/users/', function(req,res,next){
-  USER.find(function(err,users){
+  USER.find({userId: !null},function(err,users){
     if (err) return {error: err}
     res.json(users)
   })
@@ -52,7 +52,8 @@ app.get('api/exercise/users/', function(req,res,next){
 app.post('/api/exercise/add/',function(req,res,next){
   USER.findOne({userId: req.body.userId}, function(err, user){
     if (err) return next({error: err})            
-    var exerciseToAdd = new EXERCISE({userId: user.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)})
+    var exerciseToAdd = new EXERCISE({userId: user.userId, description: req.body.description, duration: req.body.duration, date: new Date()})
+    if (req.body.date){exerciseToAdd.date = new Date(req.body.date)}
     exerciseToAdd.save(function (err,data){
       if (err) return next({error: err})
       res.json(data)
@@ -60,30 +61,20 @@ app.post('/api/exercise/add/',function(req,res,next){
   })
 })
   
-app.get('/api/exercise/log/',function(req,res,next){
+app.get('/api/exercise/log/', (req,res,next) => {
   var logQuery = {userId: req.query.userId}
-  USER.findOne(logQuery,function(err,user){
-    if (err) return {error: err}
-    if (!user) return next({error: "No such user exists!"})
-  })
-  if (req.query.from && req.query.to){logQuery.date = {$gte: Date(req.query.from), $lt: Date(req.query.to)}}
-  EXERCISE.find(logQuery, function(err,exerciseArr){
-    console.log(logQuery)
-    console.log(exerciseArr)
-    if (err) return {error: err}
-    var userObj = {userId: req.query.userId}
-    if (req.query.limit){
-      userObj.exercises = exerciseArr.map(d => {
-        return ({description: d.description, duration: d.duration, date: d.date}).slice(0, req.query.limit+1)
-      })
-    } else {
-      userObj.exercises = exerciseArr.map(d => {
-        return ({description: d.description, duration: d.duration, date: d.date})
-      })
-    }
-    userObj.logLength = userObj.exercises.length;
-    res.json(userObj);
-  })
+  if (req.query.from && req.query.to){logQuery.date = {$gte: new Date(req.query.from), $lt: new Date(req.query.to)}}
+  if (req.query.limit){
+    EXERCISE.find(logQuery,(err,data)=>{
+      if (err) return next({error: err})
+      res.json(data);
+    }).limit(req.query.limit)
+  } else {
+    EXERCISE.find(logQuery,(err,data)=>{
+      if (err) return next({error: err})
+      res.json(data);
+    })
+  }
 })
 
 // Not found middleware
