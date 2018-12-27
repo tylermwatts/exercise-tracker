@@ -42,8 +42,8 @@ app.route('/api/exercise/new-user/')
     })
   })
 
-app.get('api/exercise/users/', function(req,res){
-  USER.find({}).toArray(function(err,users){
+app.get('/api/exercise/users/', function(req,res){
+  USER.find({}, function(err,users){
     if (err) return {error: err}
     res.send(users)
   })
@@ -63,6 +63,7 @@ app.post('/api/exercise/add/',function(req,res,next){
   
 app.get('/api/exercise/log/', (req,res,next) => {
   var logQuery = {userId: req.query.userId}
+  var userObj = logQuery;
   if (req.query.from && req.query.to){logQuery.date = {$gte: new Date(req.query.from), $lt: new Date(req.query.to)}}
   if (req.query.limit){
     EXERCISE.find(logQuery,(err,data)=>{
