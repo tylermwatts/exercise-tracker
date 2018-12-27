@@ -25,8 +25,7 @@ const exerciseSchema = mongoose.Schema({
 })
 
 const userSchema = mongoose.Schema({
-  userId: {type: String, required: true},
-  exercises: []
+  userId: {type: String, required: true}
 })
 
 const EXERCISE = mongoose.model('EXERCISE', exerciseSchema);
@@ -56,19 +55,19 @@ app.post('/api/exercise/add/',function(req,res){
     var exerciseToAdd = new EXERCISE({userId: user.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)})
     exerciseToAdd.save(function (err,data){
       if (err) return {error: err}
-      user.exercises.push(exerciseToAdd)
-      user.save(function (err,user){
-        if (err){return {"error": err}}
-        res.send(req.body.description + " added for " + req.body.userId)
-      })
+      res.json(data)
     })
   })
 })
   
-app.get('/api/exercise/log/',function(req,res){
+app.get('/api/exercise/log/',function(req,res,next){
   var logQuery = {userId: req.query.userId}
-  if (req.query.from && req.query.to){logQuery.date = {$gte: req.query.from, $lt: req.query.to}}
-  USER.exercises.find(logQuery).exec(function(err,exerciseArr){
+  USER.findOne(logQuery,function(err,user){
+    if (err) return {error: err}
+    if (!user) return next({error: "No such user exists!"})
+  })
+  if (req.query.from && req.query.to){logQuery.date = {$gte: Date(req.query.from), $lt: Date(req.query.to)}}
+  EXERCISE.find(logQuery, function(err,exerciseArr){
     console.log(logQuery)
     console.log(exerciseArr)
     if (err) return {error: err}
