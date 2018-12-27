@@ -66,9 +66,9 @@ app.get('/api/exercise/log/', (req,res,next) => {
   var userObj = logQuery;
   if (req.query.from && req.query.to){logQuery.date = {$gte: new Date(req.query.from), $lt: new Date(req.query.to)}}
   if (req.query.limit){
-    EXERCISE.find(logQuery,(err,data)=>{
+    EXERCISE.find(logQuery).sort({date: -1}).limit(req.query.limit).exec((err,data)=>{
       if (err) return next({error: err})
-      userObj.exercises = data.slice(0,req.query.limit);
+      userObj.exercises = data;
       userObj.count = userObj.exercises.length;
       res.json(userObj);
     })
