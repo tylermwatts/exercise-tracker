@@ -53,11 +53,14 @@ app.route('/api/exercise/new-user/')
 app.post('/api/exercise/add/',function(req,res){
   USER.findOne({userId: req.body.userId}, function(err, user){
     if(err){return res.json({"error": err})}
-    var exerciseToAdd = new EXERCISE({userId: req.body.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)})
-    user.exercises.push(exerciseToAdd)
-    user.save(function (err,user){
-      if (err){return {"error": err}}
-      res.send(req.body.description + " added for " + req.body.userId)
+    var exerciseToAdd = new EXERCISE({userId: user.userId, description: req.body.description, duration: req.body.duration, date: new Date(req.body.date)})
+    exerciseToAdd.save(function (err,data){
+      if (err) return {error: err}
+      user.exercises.push(exerciseToAdd)
+      user.save(function (err,user){
+        if (err){return {"error": err}}
+        res.send(req.body.description + " added for " + req.body.userId)
+      })
     })
   })
 })
