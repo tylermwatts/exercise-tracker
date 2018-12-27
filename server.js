@@ -68,12 +68,16 @@ app.get('/api/exercise/log/', (req,res,next) => {
   if (req.query.limit){
     EXERCISE.find(logQuery,(err,data)=>{
       if (err) return next({error: err})
-      res.json(data);
-    }).limit(req.query.limit)
+      userObj.exercises = data.slice(0,req.query.limit);
+      userObj.count = userObj.exercises.length;
+      res.json(userObj);
+    })
   } else {
     EXERCISE.find(logQuery,(err,data)=>{
       if (err) return next({error: err})
-      res.json(data);
+      userObj.exercises = data;
+      userObj.count = userObj.exercises.length;
+      res.json(userObj);
     })
   }
 })
