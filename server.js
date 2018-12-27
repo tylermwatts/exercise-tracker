@@ -65,15 +65,17 @@ app.post('/api/exercise/add/',function(req,res){
 app.get('/api/exercise/log/',function(req,res){
   var logQuery = {userId: req.query.userId}
   if (req.query.from && req.query.to){logQuery.date = {$gte: req.query.from, $lt: req.query.to}}
-  EXERCISE.find(logQuery).exec(function(err,exercises){
+  USER.exercises.find(logQuery).exec(function(err,exerciseArr){
+    console.log(logQuery)
+    console.log(exerciseArr)
     if (err) return {error: err}
     var userObj = {userId: req.query.userId}
     if (req.query.limit){
-      userObj.exercises = exercises.map(d => {
+      userObj.exercises = exerciseArr.map(d => {
         return ({description: d.description, duration: d.duration, date: d.date}).slice(0, req.query.limit+1)
       })
     } else {
-      userObj.exercises = exercises.map(d => {
+      userObj.exercises = exerciseArr.map(d => {
         return ({description: d.description, duration: d.duration, date: d.date})
       })
     }
