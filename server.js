@@ -33,7 +33,8 @@ const USER = mongoose.model('USER', userSchema);
 
 app.route('/api/exercise/new-user/')
   .post(function(req, res, next){
-    USER.find({userId: req.body}, function(err,user){
+    USER.find({userId: req.body.username}, function(err,user){
+      console.log(err)
       if (err) return next({error: err})
       if (!user) {
         var u = new USER;
@@ -44,12 +45,17 @@ app.route('/api/exercise/new-user/')
           res.json(user)
         })
       } else {
-        next({error: "user already exists!"})
+        return next({error: "user already exists!"})
       }
     })
   })
 
-
+app.get('api/exercise/users/', function(req,res,next){
+  USER.find(function(err,users){
+    if (err) return {error: err}
+    res.json(users)
+  })
+})
 
 app.post('/api/exercise/add/',function(req,res,next){
   USER.findOne({userId: req.body.userId}, function(err, user){
