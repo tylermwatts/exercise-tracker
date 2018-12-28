@@ -63,7 +63,8 @@ app.post('/api/exercise/add/',function(req,res,next){
 app.get('/api/exercise/log/', (req,res,next) => {
   var logQuery = {userId: req.query.userId}
   var userObj = logQuery;
-  if (req.query.from && req.query.to){logQuery.date = {$gte: new Date(req.query.from), $lt: new Date(req.query.to)}}
+  if (req.query.from && !req.query.to){logQuery.date = {$gte: new Date(req.query.from), $lt: new Date()}}
+  else if (req.query.from && req.query.to){logQuery.date = {$gte: new Date(req.query.from), $lt: new Date(req.query.to)}}
   if (req.query.limit){
     EXERCISE.find(logQuery).limit(parseFloat(req.query.limit)).sort({date: -1}).exec((err,data)=>{
       if (err) return next({error: err})
