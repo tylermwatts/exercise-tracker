@@ -18,14 +18,14 @@ app.get('/', (req, res) => {
 });
 
 const exerciseSchema = mongoose.Schema({
-  userId: {type: String},
   description: {type: String, required: true},
   duration: {type: Number, required: true},
   date: {type: Date, default: Date.now }
 })
 
 const userSchema = mongoose.Schema({
-  userId: {type: String, required: true}
+  userId: {type: String, required: true},
+  exercises: [exerciseSchema]
 })
 
 const EXERCISE = mongoose.model('EXERCISE', exerciseSchema);
@@ -54,7 +54,7 @@ app.post('/api/exercise/add/',function(req,res,next){
     var exerciseToAdd = new EXERCISE({userId: user.userId, description: req.body.description, duration: req.body.duration, date: new Date()})
     if (req.body.date){exerciseToAdd.date = new Date(req.body.date)}
     user.exercises.push(exerciseToAdd)
-    exerciseToAdd.save(function (err,data){
+    user.save(function (err,data){
       if (err) return next({error: err})
       res.json(data)
     })
@@ -66,21 +66,12 @@ app.get('/api/exercise/log/', (req,res,next) => {
   var userObj = logQuery;
   if (req.query.from && !req.query.to){logQuery.date = {$gte: new Date(req.query.from), $lt: new Date()}}
   else if (req.query.from && req.query.to){logQuery.date = {$gte: new Date(req.query.from), $lt: new Date(req.query.to)}}
-  if (req.query.limit){
-    EXERCISE.find(logQuery).limit(parseFloat(req.query.limit)).sort({date: -1}).exec((err,data)=>{
-      if (err) return next({error: err})
-      userObj.exercises = data;
-      userObj.count = userObj.exercises.length;
-      res.json(userObj);
-    })
-  } else {
-    EXERCISE.find(logQuery,(err,data)=>{
-      if (err) return next({error: err})
-      userObj.exercises = data;
-      userObj.count = userObj.exercises.length;
-      res.json(userObj);
-    })
-  }
+  EXERCISE.find(logQuery).limit(parseFloat(req.query.limit)).sort({date: -1}).exec((err,data)=>{
+    if (err) return next({error: err})
+    userObj.exercises = data;
+    userObj.count = userObj.exercises.length;
+    res.json(userObj);
+  })
 })
 
 // Not found middleware
