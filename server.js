@@ -53,6 +53,7 @@ app.post('/api/exercise/add/',function(req,res,next){
     if (err) return next({error: err})
     var exerciseToAdd = new EXERCISE({userId: user.userId, description: req.body.description, duration: req.body.duration, date: new Date()})
     if (req.body.date){exerciseToAdd.date = new Date(req.body.date)}
+    user.exercises.push(exerciseToAdd)
     exerciseToAdd.save(function (err,data){
       if (err) return next({error: err})
       res.json(data)
