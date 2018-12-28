@@ -32,13 +32,15 @@ const EXERCISE = mongoose.model('EXERCISE', exerciseSchema);
 const USER = mongoose.model('USER', userSchema);
 
 app.route('/api/exercise/new-user/')
-  .post(function(req, res, next){
-    USER.findOne(req.body.username, function(err,data){
-    \}
+  .post(function(req, res){
+    USER.findOne({userId: req.body.username}, function(err,user){
+      if (err) return res.send({error: err})
+      if (user) return res.send({error: "User already exists!"})
+    })
     var u = new USER;
     u.userId = req.body.username;
     u.save(function (err,user){
-      if (err){return next({error: err})}
+      if (err){return res.send({error: err})}
       res.json(user)
     })
   })
