@@ -35,7 +35,6 @@ app.route('/api/exercise/new-user/')
   .post(function(req, res, next){
     var u = new USER;
     u.userId = req.body.username;
-    console.log(u)
     u.save(function (err,user){
       if (err){return next({error: err})}
       res.json(user)
@@ -51,7 +50,7 @@ app.get('/api/exercise/users/', function(req,res){
 
 app.post('/api/exercise/add/',function(req,res,next){
   USER.findOne({userId: req.body.userId}, function(err, user){
-    if (err) return next({error: err})            
+    if (err) return next({error: err})
     var exerciseToAdd = new EXERCISE({userId: user.userId, description: req.body.description, duration: req.body.duration, date: new Date()})
     if (req.body.date){exerciseToAdd.date = new Date(req.body.date)}
     exerciseToAdd.save(function (err,data){
