@@ -52,19 +52,19 @@ app.get('/api/exercise/users/', function(req,res){
   })
 })
 
-app.post('/api/exercise/add/',function(req,res,next){
+app.post('/api/exercise/add/',function(req,res){
   USER.findOne({userId: req.body.userId}, function(err, user){
-    if (err) return next({error: err})
-    var exerciseToAdd = new EXERCISE({description: req.body.description, duration: req.body.duration, date: new Date()})
+    if (err) return res.send({error: err})
+    var exerciseToAdd = new EXERCISE({userId: user.userId, description: req.body.description, duration: req.body.duration, date: new Date()})
     if (req.body.date){exerciseToAdd.date = new Date(req.body.date)}
     exerciseToAdd.save(function (err,data){
-      if (err) return next({error: err})
+      if (err) return res.send({error: err})
       res.json(data)
     })
   })
 })
   
-app.get('/api/exercise/log/', (req,res,next) => {
+app.get('/api/exercise/log/', (req,res) => {
   var logQuery = {userId: req.query.userId}
   var userObj = logQuery;
   if (req.query.from){
@@ -77,8 +77,8 @@ app.get('/api/exercise/log/', (req,res,next) => {
     logQuery.date = {$lt: req.query.to}
   }
   EXERCISE.find(logQuery).limit(parseFloat(req.query.limit)).sort({date: -1}).exec((err,data)=>{
-    if (err) return next({error: err})
-    userObj.exercises = data;
+    if (err) return res.send({error: err})
+    userObj.exercises = data.map(d=> ({description: d.description, duration: d.duration, date: new Date(d.date)}));
     userObj.count = userObj.exercises.length;
     res.json(userObj);
   })
