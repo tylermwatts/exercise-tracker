@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 
 const mongoose = require('mongoose')
-mongoose.connect(process.env.MLAB_URI)
+mongoose.connect(process.env.MLAB_URI, {useNewUrlParser: true})
 
 app.use(cors())
 
@@ -67,7 +67,15 @@ app.post('/api/exercise/add/',function(req,res,next){
 app.get('/api/exercise/log/', (req,res,next) => {
   var logQuery = {userId: req.query.userId}
   var userObj = logQuery;
-  req.query.from ? logQuery.date = {$gte: req.query.from} : req.query.to ? log
+  if (req.query.from){
+    if (req.query.to){
+      logQuery.date = {$gte: new Date(req.query.from), $lt: new Date(req.query.to)}
+    } else {
+      logQuery.date = {$gte: new Date(req.query.from)}
+    }
+  } else if (req.query.to){
+    logQuery.date = {$lt: req.query.to}
+  }
   EXERCISE.find(logQuery).limit(parseFloat(req.query.limit)).sort({date: -1}).exec((err,data)=>{
     if (err) return next({error: err})
     userObj.exercises = data;
