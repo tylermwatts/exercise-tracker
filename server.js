@@ -32,32 +32,32 @@ const EXERCISE = mongoose.model('EXERCISE', exerciseSchema);
 const USER = mongoose.model('USER', userSchema);
 
 app.route('/api/exercise/new-user/')
-  .post(function(req, res){
-    USER.findOne({userId: req.body.username}, function(err,user){
+  .post((req, res) => {
+    USER.findOne({userId: req.body.username}, (err,user) => {
       if (err) return res.send({error: err})
       if (user) return res.send({error: "User already exists!"})
       var u = new USER;
       u.userId = req.body.username;
-      u.save(function (err,user){
+      u.save((err,user) => {
         if (err){return res.send({error: err})}
         res.json(user)
       })
     })
   })
 
-app.get('/api/exercise/users/', function(req,res){
-  USER.find({}, function(err,users){
+app.get('/api/exercise/users/', (req,res) => {
+  USER.find({}, (err,users) => {
     if (err) return {error: err}
     res.send(users)
   })
 })
 
-app.post('/api/exercise/add/',function(req,res){
-  USER.findOne({userId: req.body.userId}, function(err, user){
+app.post('/api/exercise/add/', (req,res) => {
+  USER.findOne({userId: req.body.userId}, (err, user) => {
     if (err) return res.send({error: err})
     var exerciseToAdd = new EXERCISE({userId: user.userId, description: req.body.description, duration: req.body.duration, date: new Date()})
     if (req.body.date){exerciseToAdd.date = new Date(req.body.date)}
-    exerciseToAdd.save(function (err,data){
+    exerciseToAdd.save((err,data) => {
       if (err) return res.send({error: err})
       res.json(data)
     })
@@ -78,7 +78,7 @@ app.get('/api/exercise/log/', (req,res) => {
   }
   EXERCISE.find(logQuery).limit(parseFloat(req.query.limit)).sort({date: -1}).exec((err,data)=>{
     if (err) return res.send({error: err})
-    userObj.exercises = data.map(d=> ({description: d.description, duration: d.duration, date: new Date(d.date)}));
+    userObj.exercises = data.map(d=> ({description: d.description, duration: d.duration, date: new Date(d.date).toLocaleDateString()}));
     userObj.count = userObj.exercises.length;
     res.json(userObj);
   })
